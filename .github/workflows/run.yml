@@ -8,6 +8,12 @@ on:
     - cron: "13 3 * * *"   # 낮 12:13
     - cron: "13 9 * * *"   # 저녁 6:13
   workflow_dispatch:       # Actions 탭에서 수동 실행
+  push:                    # 화면·설정을 고쳐 올리면 바로 반영 (봇의 data/ 커밋으로는 실행되지 않음)
+    branches: [main]
+    paths:
+      - "web/**"
+      - "build_site.sh"
+      - ".github/workflows/run.yml"
 
 permissions:
   contents: write          # data/notices.json 커밋
