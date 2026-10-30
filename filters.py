@@ -20,6 +20,7 @@ GWANGMYEONG_SOURCES = {"gm_city", "gm_corp"}
 SENIOR_TAG = "고령자 해당 가능"
 WIDE_TAG = "광역 공고 (광명에서 집을 구해 신청 가능)"
 CHECK_TAG = "광명 포함 여부 확인 필요"
+STALE_DAYS = 60  # 마감일 없는 공고는 게시 후 이 기간이 지나면 알림하지 않음
 
 # 제목에 이 중 하나라도 있으면 "지역이 구체적으로 적힌 공고" → 광명이 없으면 광명 아님
 CITY_NAMES = [
@@ -51,7 +52,8 @@ class Verdict:
 
 def _text(notice: Notice) -> str:
     complexes = notice.raw.get("complexes", [])
-    parts = [notice.title, notice.region, notice.address or "", notice.summary or ""]
+    parts = [notice.title, notice.region, notice.address or "", notice.summary or "",
+             notice.raw.get("region_text") or ""]
     parts += [c.get("name", "") + " " + c.get("address", "") for c in complexes]
     return " ".join(parts)
 
@@ -67,8 +69,11 @@ def is_wide_area(notice: Notice) -> bool:
 
 def classify(notice: Notice, config: dict, today: date | None = None) -> Verdict:
     verdict = _classify(notice, config)
-    if verdict.alert and today and notice.apply_end and notice.apply_end < today:
-        verdict.alert, verdict.reason = False, "접수 마감"
+    if verdict.alert and today:
+        if notice.apply_end and notice.apply_end < today:
+            verdict.alert, verdict.reason = False, "접수 마감"
+        elif not notice.apply_end and notice.posted_at and (today - notice.posted_at).days > STALE_DAYS:
+            verdict.alert, verdict.reason = False, f"마감일 없음 + {STALE_DAYS}일 지난 공고"
     return verdict
 
 
@@ -82,6 +87,9 @@ def _classify(notice: Notice, config: dict) -> Verdict:
     tags = []
     in_gm = notice.source in GWANGMYEONG_SOURCES or _has_any(_text(notice), f["region_keywords"])
     if not in_gm:
+        if notice.raw.get("complexes") or notice.raw.get("region_text"):
+            # 단지 주소나 모집지역 목록을 알고 있는데 광명이 없음 → 확실히 광명 아님
+            return Verdict(keep=False, reason="광명 아님 (단지·모집지역 확인)")
         if not is_wide_area(notice):
             return Verdict(keep=False, reason="광명 아님")
         if _has_any(f"{title} {notice.housing_type or ''}", f["wide_area_types"]):
