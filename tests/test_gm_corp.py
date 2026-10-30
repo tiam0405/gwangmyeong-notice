@@ -45,5 +45,6 @@ def test_notice_alerts_with_senior_tag():
     row = next(r for r in parse_list(html("gm_corp_list.html")) if r["id"] == "154")
     n = to_notice(row, parse_detail(html("gm_corp_detail_154.html")))
     assert n.housing_type == "행복주택"
+    assert n.url == "https://house.gmuc.co.kr/jsp/guser/notice_view.jsp?Noticeid=154"
     v = classify(n, CONFIG, date(2026, 6, 27))
     assert v.alert and SENIOR_TAG in v.tags

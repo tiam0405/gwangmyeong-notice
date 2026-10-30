@@ -119,8 +119,9 @@ def to_notice(row: dict, detail: dict) -> Notice:
         source="gm_corp",
         source_id=row["id"],
         title=row["title"],
-        # 공고별 고정 주소가 없어 청약센터 공지사항 목록으로 안내
-        url=f"{BASE}/?menu=notice&Noticeid={row['id']}",
+        # 사이트 화면에는 공고별 주소가 없지만, 상세 조각(notice_view.jsp)은 GET으로도 열린다
+        # (디자인 없이 본문만 보이고 첨부 다운로드는 청약센터에서)
+        url=f"{BASE}/jsp/guser/notice_view.jsp?Noticeid={row['id']}",
         posted_at=detail.get("posted_at"),
         apply_start=detail.get("apply_start"),
         apply_end=detail.get("apply_end"),
