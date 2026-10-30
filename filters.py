@@ -21,6 +21,7 @@ SENIOR_TAG = "고령자 해당 가능"
 WIDE_TAG = "광역 공고 (광명에서 집을 구해 신청 가능)"
 CHECK_TAG = "광명 포함 여부 확인 필요"
 STALE_DAYS = 60  # 마감일 없는 공고는 게시 후 이 기간이 지나면 알림하지 않음
+OLD_DAYS = 365   # 마감(또는 게시) 후 이 기간이 지난 공고는 목록에도 넣지 않음
 
 # 제목에 이 중 하나라도 있으면 "지역이 구체적으로 적힌 공고" → 광명이 없으면 광명 아님
 CITY_NAMES = [
@@ -69,6 +70,9 @@ def is_wide_area(notice: Notice) -> bool:
 
 def classify(notice: Notice, config: dict, today: date | None = None) -> Verdict:
     verdict = _classify(notice, config)
+    last = notice.apply_end or notice.posted_at
+    if verdict.keep and today and last and (today - last).days > OLD_DAYS:
+        return Verdict(keep=False, reason=f"마감 후 {OLD_DAYS}일 지난 공고")
     if verdict.alert and today:
         if notice.apply_end and notice.apply_end < today:
             verdict.alert, verdict.reason = False, "접수 마감"

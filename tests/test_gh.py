@@ -62,6 +62,12 @@ def test_multi_complex_with_gwangmyeong_alerts_with_senior_tag():
     assert v.keep and v.alert and SENIOR_TAG in v.tags  # 주택형에 "고령자" 있음
 
 
+def test_very_old_notice_not_listed():
+    row = parse_list(html("gh_list_gwangmyeong.html"), "sr7150")[1]  # 2018년 광명 장기전세
+    v = classify(to_notice(row, {}), CONFIG, date(2026, 10, 30))
+    assert not v.keep and "지난 공고" in v.reason
+
+
 def test_no_deadline_notice_goes_stale():
     row = next(r for r in parse_list(html("gh_list_maeip.html"), "sr7155") if r["pbanc_no"] == "812")
     n = to_notice(row, {})  # 2026-08-21 게시, 마감일 없음

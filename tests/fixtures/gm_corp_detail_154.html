@@ -1,0 +1,136 @@
+
+
+
+                                                                                                                                                                                 
+
+
+
+
+                                                                                                                                                     
+
+
+    <script>
+        $(document).ready(function() {
+        	if($("#guserMain").length > 0) {
+        		$("#title").hide();
+        	} 
+        });
+        
+      //공지사항
+        function notice_list() {                       
+            $.ajax({
+                type: "post",
+                url: "https://house.gmuc.co.kr/"+"jsp/guser/" + ($("#guserMain").length > 0 ? "hp2400_Manage.jsp" : "notice_list.jsp"),
+                data: "pagenum=" + '1',
+                dataType: 'text',
+                success: whenSuccess, //success 일때 WhenSuccess 호출
+                error: whenError //error 일때 whenError 호출
+            });
+        }
+		
+      //파일 다운로드
+        function file_download(file_id, detail_file_id) {
+        	var inputs = '';
+    	    inputs+='<input type="hidden" name=file_id value="'+ file_id +'" />';
+    	    inputs+='<input type="hidden" name=detail_file_id value="'+ detail_file_id +'" />';
+    	    
+      		$('<form action="../jsp/admin/fileDownload.jsp" method="post">'+inputs+'</form>').appendTo('body').submit().remove();
+        }
+    </script>
+
+                                                                                                                                      
+<h1 id="title" class="tit-h1" data-aos="fade-up"><em>공지사항</em></h1>
+
+<!-- 게시판 뷰 { -->
+<article class="board-box" data-aos="fade-up" data-aos-delay="100">
+    <div class="board-view">
+        <div class="board-view-top">
+            <h1 class="board-h1">광명제4R구역 재개발 임대주택(행복주택) 일반공급 입주자 모집</h1>
+            <div class="date-hit">
+                <span class="name"><i class="far fa-user"></i> gm002 </span>
+                <span class="date"><i class="far fa-calendar-edit"></i> 2026-06-26 11:19 </span>
+                <span class="hit">VIEW : 4667</span>
+            </div>
+        </div>
+        <div class="board-view-file">
+            <ul class="nopm">
+                
+				<li>
+	                <a href="javascript:" class="file_down_text" onclick="file_download('100' ,'243'); return false;">
+	                    <span class="ico"><i class="far fa-folder-open"></i></span>
+	                    <em class="file-name">1-2 4R 입주자 모집공고.pdf<small class="file-info"><i class="fal fa-download"></i> : 2661</small></em>
+	                </a>
+                </li>
+				
+				<li>
+	                <a href="javascript:" class="file_down_text" onclick="file_download('100' ,'244'); return false;">
+	                    <span class="ico"><i class="far fa-folder-open"></i></span>
+	                    <em class="file-name">2-2 4R현장접수 신청서.hwp<small class="file-info"><i class="fal fa-download"></i> : 165</small></em>
+	                </a>
+                </li>
+				
+				<li>
+	                <a href="javascript:" class="file_down_text" onclick="file_download('100' ,'251'); return false;">
+	                    <span class="ico"><i class="far fa-folder-open"></i></span>
+	                    <em class="file-name">3-2 4R 서류제출 별첨서류.hwp<small class="file-info"><i class="fal fa-download"></i> : 355</small></em>
+	                </a>
+                </li>
+				
+            </ul>
+        </div>
+        <div class="board-view-con">
+            <!-- 유튜브 영상이 있을 시 { -->
+<!--             <div class="embed-container"><iframe src="https://www.youtube.com/embed/ljwvDOcjTRw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><br /> -->
+            <!-- } 유튜브 영상이 있을 시 -->
+            <div>
+                <p>광명제4R구역 재개발 임대주택(행복주택) 일반공급 입주자 모집을 아래와 같이 알려드립니다.<br />
+&nbsp;</p>
+
+<p>○ 신청대상 및 자격</p>
+
+<p>- (신청대상) 대학생, 청년, 고령자, 주거급여수급자 계층</p>
+
+<p>- (세부자격) 유형별 입주자격 모집공고문 참고</p>
+
+<p></p>
+
+<p>○ 모집호수: 총 7호(전용면적 39.939㎡)</p>
+
+<p></p>
+
+<p>○ 대상주택 : 광명센트럴아이파크(경기도 광명시 광명2동 88-14번지 일원)</p>
+
+<p></p>
+
+<p>○ 청약연습기간: `26. 6. 26.(금) ~ `26. 7. 5.(일)</p>
+
+<p></p>
+
+<p>○ 청약신청기간: `26. 7. 6.(월) 10:00 ~ `26. 7. 8.(수) 17:00</p>
+
+<p>* 방문접수의 경우 정보취약계층(65세 이상 고령자 및 장애인 등)에 한해 가능합니다.</p>
+
+<p>- (방문접수 기간) : `26. 7. 6.(월) 10:00 ~ `26. 7. 8.(수) 17:00</p>
+
+<p></p>
+
+<p>○ 청약신청장소: 광명도시공사 청약홈페이지(house.gmuc.co.kr)</p>
+
+<p></p>
+
+<p>○ 서류제출대상자 발표 : `26. 7. 10.(금) 17:00 이후</p>
+
+<p>-----------------------------------------------------------------------------------------------------</p>
+
+<p></p>
+
+<p>* 추후일정 및 세부사항은 붙임의 입주자 모집공고문을 참고하시기 바랍니다.</p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-area alignCenter mgt30px">
+        <a href="javascript:;" class="btns h50px round5px grayBtn fsize16" onClick="notice_list()" onmouseover="style.cursor='pointer'"><i class="far fa-list"></i> 목록으로</a>
+    </div>
+</article>                                                                                                                                                                                                       

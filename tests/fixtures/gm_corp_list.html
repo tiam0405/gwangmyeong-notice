@@ -1,0 +1,177 @@
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script>
+        $(document).ready(function() {
+        	var NoticeCategory = '%';
+        	if(NoticeCategory == '%') document.getElementById('notice_entire').className = 'active';
+        	else document.getElementById('notice_'+NoticeCategory).className = 'active';
+        		
+        	
+        	
+        });
+        
+      //공지사항
+        function notice_list(strNum, sNoticecategory, sNoticename, sNoticeuseyn, sType) {
+        	if (strNum == "" || strNum == null) {
+                strNum = "1";
+            }
+            if (sNoticecategory == "" || sNoticecategory == null) {
+            	sNoticecategory = "";	
+            }
+            if (sNoticename == "" || sNoticename == null) {
+            	sNoticename = "";
+            }
+            if (sNoticeuseyn == "" || sNoticeuseyn == null) {
+            	sNoticeuseyn = "";
+            }
+            //유형 추가 - 20250328
+	        if (sType == "" || sType == null) {
+	        	sType = "";
+            }
+	        //유형 추가 - 20250328
+                                  
+            $.ajax({
+                type: "post",
+                url: "https://house.gmuc.co.kr/"+"jsp/guser/notice_list.jsp",
+                data: "pagenum=" + strNum 
+                	+ "&Noticecategory=" + sNoticecategory 
+                	+ "&Noticename=" + sNoticename 
+                	+ "&Noticeuseyn=" + sNoticeuseyn
+                	+ "&Type=" + sType,
+                dataType: 'text',
+                success: whenSuccess, //success 일때 WhenSuccess 호출
+                error: whenError //error 일때 whenError 호출
+            });
+        }
+      
+        function notice_view(str) {                       
+            $.ajax({
+                type: "post",
+                url: "https://house.gmuc.co.kr/"+"jsp/guser/notice_view.jsp",
+                data: "Noticeid=" + str,
+                dataType: 'text',
+                success: whenSuccess, //success 일때 WhenSuccess 호출
+                error: whenError //error 일때 whenError 호출
+            });
+        }
+      
+        /*조회조건 별 list조회 */
+        function search_notice_list() {
+            // ----------------------- 기준정보 상세Paging 처리 시작 function처리 필요 -----------------------
+            var sPageNum = '1';
+            var sNoticecategory = sNoticecategory;
+            var sNoticename = search_detail.value;
+            var sNoticeuseyn = 'y';
+            $(parent.location).attr("href", "javascript:notice_list('" + sPageNum + "','" + sNoticecategory + "','" + sNoticename + "','" + sNoticeuseyn + "');");
+        }
+        
+
+
+    </script>
+
+<h1 class="tit-h1" data-aos="fade-up"><em>공지사항</em></h1>
+
+<nav class="sub-gnb" data-aos="fade-up" data-aos-delay="100">
+    <ul class="nopm swiper-wrapper">
+    	<li class="swiper-slide"><a href="javascript:" id= "notice_entire" onClick="notice_list()" onmouseover="style.cursor='pointer'" >전체</a></li>
+    	<li class="swiper-slide"><a href="javascript:" id="notice_03"onClick="notice_list('','03','','')" onmouseover="style.cursor='pointer'">안내사항</a></li><li class="swiper-slide"><a href="javascript:" id="notice_02"onClick="notice_list('','02','','')" onmouseover="style.cursor='pointer'">일반공급</a></li><li class="swiper-slide"><a href="javascript:" id="notice_01"onClick="notice_list('','01','','')" onmouseover="style.cursor='pointer'">특별공급</a></li>
+    </ul>
+    <script>
+        var swiper = new Swiper(".sub-gnb", {
+            slidesPerView: "auto",
+            spaceBetween: 0,
+        });
+    </script>
+</nav>
+
+<!-- 게시판 리스트 (10개씩 뿌리기) { -->
+<article class="board-box" data-aos="fade-up" data-aos-delay="200">
+    <div class="total-search">
+        <h4 class="total-num">총 <b class="colorBlue">71</b>건이 등록되었습니다.</h4>
+        <div class="searchbox">
+        	<!-- //유형 추가 - 20250328 -->
+        	<select id="search_type" name="search_type" style="height: 36px;
+    line-height: 34px;
+    padding: 0 10px;
+    border: 1px solid rgba(var(--black-white-rgb), 0.2);
+    background-color: var(--color-background);">
+        		<option value="%">전체</option>
+        		<option value="06" >행복주택(창업지원)</option>
+        		<option value="05" >행복주택(재건축)</option>
+        		<option value="04" >행복주택(재개발)</option>
+				<option value="03" >통합공공임대주택</option>
+				<option value="02" >전세임대주택</option>
+				<option value="01" >장기전세주택</option>
+        	</select>&nbsp;
+        	<!-- //유형 추가 - 20250328 -->
+            <input id="search_detail" name="search_detail" type="text" class="basic-input" placeholder="검색어를 입력해주세요" />
+            <a href="javascript:" onClick="notice_list(null,null,search_detail.value,null,search_type.value)" onmouseover="style.cursor='pointer'" class="btns blueBtn h36px"><i class="far fa-search"></i> 검색</a>
+        </div>
+    </div>
+    <ul class="nopm board-list">
+        <li class="board-list-header">
+            <div class="date">구분</div>
+            <!-- //유형 추가 - 20250328 -->
+            <div class="name">유형</div>
+            <!-- //유형 추가 - 20250328 -->
+            <div class="subject">제목</div>
+            <div class="name">작성자</div>
+            <div class="date-hit">조회수</div>
+        </li>
+        <li class="notice"><div class="date"><div class="notice-mark">공지</div></div><div class="type"><div class="notice-mark">행복주택(창업지원)</div></div><div class="subject"><a href="javaScript:notice_view('168');">광명소하 행복주택(일자리연계형 지원주택) 입주예정시기 안내(2차)</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">1699</div></div></li><li><div class="date"><strong>70</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('170');">광명제4R구역 일반공급 입주자(예비입주자 포함) 및 동호수 추첨결과 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">589</div></div></li><li><div class="date"><strong>69</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('169');">광명제1R구역 일반공급 입주자(예비입주자 포함) 및 동호수 추첨결과 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">408</div></div></li><li><div class="date"><strong>68</strong></div><div class="type"><div class="notice-mark">행복주택(재건축)</div></div><div class="subject"><a href="javaScript:notice_view('162');">철산주공8,9단지 재건축 임대주택 일반공급 예비입주자 및 동호수 추첨결과 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">1205</div></div></li><li><div class="date"><strong>67</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('161');">[광명제1,4R구역 재개발 임대주택 일반공급] 서류제출기간 연장 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">717</div></div></li><li><div class="date"><strong>66</strong></div><div class="type"><div class="notice-mark">행복주택(창업지원)</div></div><div class="subject"><a href="javaScript:notice_view('160');">광명소하 행복주택(일자리연계형 지원주택) 입주예정시기 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">1005</div></div></li><li><div class="date"><strong>65</strong></div><div class="type"><div class="notice-mark">행복주택(창업지원)</div></div><div class="subject"><a href="javaScript:notice_view('159');">광명소하 행복주택(일자리연계형 지원주택) 일반공급 당첨자 및 호수 추첨결과 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">1705</div></div></li><li><div class="date"><strong>64</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('158');">광명제4R구역 일반공급 입주자 모집 서류제출 대상자 발표 및 서류제출 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">1467</div></div></li><li><div class="date"><strong>63</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('157');">광명제1R구역 일반공급 입주자 모집 서류제출 대상자 발표 및 서류제출 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">1688</div></div></li><li><div class="date"><strong>62</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('154');">광명제4R구역 재개발 임대주택(행복주택) 일반공급 입주자 모집</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">4667</div></div></li><li><div class="date"><strong>61</strong></div><div class="type"><div class="notice-mark">행복주택(재개발)</div></div><div class="subject"><a href="javaScript:notice_view('153');">광명제1R구역 재개발 임대주택(행복주택) 일반공급 입주자 모집</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">4070</div></div></li><li><div class="date"><strong>60</strong></div><div class="type"><div class="notice-mark">행복주택(재건축)</div></div><div class="subject"><a href="javaScript:notice_view('151');">(당첨자 발표 연기) 철산주공8,9단지 임대주택 예비입주자 당첨자 발표 연기 안내</a></div><div class="name"><div class="notice-mark">gm002</div></div><div class="date-hit"><div class="notice-mark">867</div></div></li>
+<!--         <li class="notice"> -->
+<!--             <div class="date"> -->
+<!--                 <div class="notice-mark">공지</div> -->
+<!--             </div> -->
+<!--             <div class="subject"> -->
+<!--                 <a href="javascript:" onclick="bbsManage('notice','view')"> -->
+<!--                     <em>광명시 공공매입 임대주택 예비입주자 모집 서류 제출자 발표</em> -->
+<!--                 </a> -->
+<!--             </div> -->
+<!--             <div class="name">사업지원부</div> -->
+<!--             <div class="date-hit"> -->
+<!--                 <span class="name">사업지원부</span> -->
+<!--                 <span class="date">2021-08-24 00:00</span> -->
+<!--                 <span class="hit"><span>VIEW : </span>3,458</span> -->
+<!--             </div> -->
+<!--         </li> -->
+<!--         <li> -->
+<!--             <div class="date"> -->
+<!--                 <strong>28</strong> -->
+<!--                 <small>2021-08</small> -->
+<!--             </div> -->
+<!--             <div class="subject"> -->
+<!--                 <a href="javascript:" href="javascript:" onclick="bbsManage('notice','view')"> -->
+<!--                     <em>광명시 공공매입 임대주택 잔여세대 및 예비입주자 모집 서류 제출자 발표</em> -->
+<!--                 </a> -->
+<!--             </div> -->
+<!--             <div class="name">사업지원부</div> -->
+<!--             <div class="date-hit"> -->
+<!--                 <span class="name">사업지원부</span> -->
+<!--                 <span class="date">2021-08-24 00:00</span> -->
+<!--                 <span class="hit"><span>VIEW : </span>3,458</span> -->
+<!--             </div> -->
+<!--         </li> -->
+    </ul>
+
+    <div class="pagenation">
+<!--         <a href="#;" class="num-jump page-start"><i class="far fa-chevron-double-left"></i></a> -->
+<!--         <a href="#;" class="num-jump page-prev"><i class="far fa-chevron-left"></i></a> -->
+<!--         <a href="#;" class="num">51</a> -->
+<!--         <span class="on">52</span> -->
+<!--         <a href="#;" class="num">53</a> -->
+<!--         <a href="#;" class="num-jump page-next"><i class="far fa-chevron-right"></i></a> -->
+<!--         <a href="#;" class="num-jump page-end"><i class="far fa-chevron-double-right"></i></a> -->
+			<span class="on">1</span><a href="javaScript:notice_list('2','%','%','y','%');"class ="num" > 2</a> &nbsp;<a href="javaScript:notice_list('3','%','%','y','%');"class ="num" > 3</a> &nbsp;<a href="javaScript:notice_list('4','%','%','y','%');"class ="num" > 4</a> &nbsp;<a href="javaScript:notice_list('5','%','%','y','%');"class ="num" > 5</a> &nbsp;<a href="javaScript:notice_list('6','%','%','y','%');"class ="num" > 6</a> &nbsp;<a href="javaScript:notice_list('2','%','%','y','%');"class ="num-jump page-next"> <i class="far fa-chevron-right"></i></a> &nbsp;<a href="javaScript:notice_list('6','%','%','y','%');"class ="num-jump page-end"> <i class="far fa-chevron-double-right"></i></a> &nbsp;
+    </div>
+</article>

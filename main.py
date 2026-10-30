@@ -20,7 +20,8 @@ from collectors.gm_city import GmCityCollector
 from collectors.gm_corp import GmCorpCollector
 from collectors.lh import LHCollector
 from collectors.myhome import MyHomeCollector
-from filters import classify, is_correction, normalize_title
+from dedupe import SOURCE_PRIORITY, by_priority, find_duplicate
+from filters import classify, is_correction
 from models import Notice
 from store import Store, today_kst
 
@@ -108,28 +109,40 @@ def main() -> None:
 
     store = Store(ROOT / "data" / "notices.json")
     today = today_kst()
-    # 원공고 제목 (정정공고가 원공고와 별도로 알림 가지 않게)
-    originals = {normalize_title(r["title"]) for r in store.records.values()}
-    originals |= {normalize_title(n.title) for n in notices if not is_correction(n.title)}
+    process(notices, store, config, today, seed=args.seed)
+    # TODO 단계 5~10: 지도 링크·신청방법 보강 → 알림 → 리마인더
+    store.archive_old(today)
+    store.save()
+
+
+def process(notices: list[Notice], store: Store, config: dict, today, seed: bool = False) -> None:
+    """판정 → 중복 확인 → 저장. 알림 대상 여부는 레코드의 alert로 남긴다."""
+    seen = [{"key": r["key"], "source": r["source"], "title": r["title"], "posted_at": r["posted_at"]}
+            for r in store.records.values()]
+    # 원 기관 공고가 먼저, 같은 소스에서는 원공고가 정정공고보다 먼저
+    ordered = sorted(by_priority(notices), key=lambda n: (SOURCE_PRIORITY.get(n.source, 9),
+                                                           is_correction(n.title)))
     kept = new = 0
-    for notice in notices:
+    for notice in ordered:
         verdict = classify(notice, config, today)
         if not verdict.keep:
             log.debug("제외 (%s): %s", verdict.reason, notice.title)
             continue
-        if verdict.alert and is_correction(notice.title) and normalize_title(notice.title) in originals:
-            verdict.alert, verdict.reason = False, "정정공고 (원공고와 같은 공고)"
+        extra = {}
+        if (dup := find_duplicate(notice, seen)):
+            extra["duplicate_of"] = dup
+            if verdict.alert:
+                verdict.alert, verdict.reason = False, f"중복 ({dup}와 같은 공고)"
+        seen.append({"key": notice.key, "source": notice.source, "title": notice.title,
+                     "posted_at": notice.posted_at})
         kept += 1
-        _, is_new = store.upsert(notice, alert=verdict.alert, tags=verdict.tags)
+        _, is_new = store.upsert(notice, alert=verdict.alert, tags=verdict.tags, **extra)
         if is_new:
             new += 1
             log.info("신규%s: %s", "" if verdict.alert else f" (알림 제외: {verdict.reason})", notice.title)
-            if args.seed:
+            if seed:
                 store.mark_notified(notice.key, seeded=True)
     log.info("광명 대상 %d건, 신규 %d건", kept, new)
-    # TODO 단계 5~10: 지도 링크·신청방법 보강 → 알림 → 리마인더
-    store.archive_old(today)
-    store.save()
 
 
 if __name__ == "__main__":
