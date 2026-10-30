@@ -41,6 +41,7 @@ def test_notice_from_detail():
     assert n.region == "경기도 과천시 갈현동"
     assert n.raw["signgu"] == "과천시"
     assert "LH청약플러스" in n.apply_method
+    assert "불이익" not in n.apply_method and "견본주택" not in n.apply_method
     assert "총 1,424세대" in n.summary
     assert any(a["kind"] == "공고문(PDF)" for a in n.attachments)
 

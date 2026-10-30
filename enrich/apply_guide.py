@@ -22,7 +22,8 @@ ATTACHMENT_NOTE = "자격·임대료·일정 등 자세한 내용은 공고 원�
 
 
 def _trim(text: str) -> str:
-    lines = [ln.strip() for ln in text.splitlines() if ln.strip()][:MAX_LINES]
+    lines = [ln.strip().lstrip("○●•·-* ").strip() for ln in text.splitlines()]
+    lines = [ln for ln in lines if ln][:MAX_LINES]
     out = "\n".join(lines)
     return out if len(out) <= MAX_CHARS else out[:MAX_CHARS].rstrip() + "…"
 

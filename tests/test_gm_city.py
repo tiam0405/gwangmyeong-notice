@@ -48,6 +48,7 @@ def test_senior_notice_alerts():
     row = parse_list(html("gm_city_nftc_list.html"), "nftc")[0]
     n = to_notice(row, parse_detail(html("gm_city_nftc_detail_66955.html"), "nftc"))
     assert n.key == "gm_city:nftc-66955" and "고령자" in n.target
+    assert n.url.endswith("q_nftcBbsMgtno=66955")
     v = classify(n, CONFIG, date(2026, 6, 16))
     assert v.alert and SENIOR_TAG in v.tags
 

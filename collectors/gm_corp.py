@@ -96,7 +96,7 @@ def parse_detail(html: str) -> dict:
             m = re.search(r"\(([^()]*광명[^()]*)\)", ln)
             address = m.group(1).strip() if m else None
         elif key.startswith("(신청대상)"):
-            target = _value(ln)
+            target = re.sub(r"^[-\s]*\(신청대상\)\s*", "", ln).removesuffix("계층").strip()
         elif key.startswith("모집호수"):
             summary.append("모집호수: " + _value(ln))
 
@@ -107,6 +107,7 @@ def parse_detail(html: str) -> dict:
                           re.findall(r"'(\d+)'", a.get("onclick", ""))))}
         for a in soup.find_all(onclick=re.compile(r"file_download\("))
     ]
+    method.sort(key=lambda m: not m.startswith("신청장소"))  # 신청장소를 맨 앞에
     return {"posted_at": posted, "apply_start": start, "apply_end": end, "address": address,
             "target": target, "apply_method": "\n".join(method) or None,
             "summary": summary, "files": files, "body": "\n".join(lines)}

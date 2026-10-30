@@ -32,8 +32,9 @@ def test_detail():
     assert d["posted_at"] == date(2026, 6, 26)
     assert (d["apply_start"], d["apply_end"]) == (date(2026, 7, 6), date(2026, 7, 8))  # 청약연습기간 아님
     assert d["address"] == "경기도 광명시 광명2동 88-14번지 일원"
-    assert "고령자" in d["target"]
-    assert "house.gmuc.co.kr" in d["apply_method"] and "65세 이상" in d["apply_method"]
+    assert d["target"] == "대학생, 청년, 고령자, 주거급여수급자"
+    assert d["apply_method"].startswith("신청장소: 광명도시공사 청약홈페이지(house.gmuc.co.kr)")
+    assert "65세 이상" in d["apply_method"]
     assert "모집호수: 총 7호(전용면적 39.939㎡)" in d["summary"]
     assert d["files"][0] == {"name": "1-2 4R 입주자 모집공고.pdf", "kind": "gmuc",
                              "url": "https://house.gmuc.co.kr/jsp/admin/fileDownload.jsp",

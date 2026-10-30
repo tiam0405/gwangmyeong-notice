@@ -1,1 +1,30 @@
-{# 알림 메시지 포맷 (단계 7) #}
+{# 신규 공고 알림. 값이 없는 항목은 줄을 출력하지 않는다. #}
+📢 [{{ badge }}] {{ n.title }}
+{% for tag in n.tags %}
+{{ tag_icon(tag) }} {{ tag }}
+{% endfor %}
+
+📍 지역: {{ n.region }}
+{% if n.map_url %}
+🗺️ 지도: {{ n.map_url }}
+{% endif %}
+{% if content %}
+🏠 내용: {{ content | join("\n   ") }}
+{% endif %}
+{% if n.posted_at %}
+📅 공고일: {{ n.posted_at | kdate }}
+{% endif %}
+{% if n.apply_start or n.apply_end %}
+⏰ 접수: {{ n.apply_start | kdate }} ~ {{ n.apply_end | kdate }}
+{% else %}
+⏰ 접수: 공고문 확인
+{% endif %}
+{% if n.apply_method %}
+
+📝 신청방법
+{% for line in n.apply_method.splitlines() %}
+- {{ line }}
+{% endfor %}
+{% endif %}
+
+🔗 공고 원문: {{ n.url }}

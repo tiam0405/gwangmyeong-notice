@@ -1,0 +1,8 @@
+{# 접수 마감 리마인더 #}
+⏰ [마감 {{ d_day }}] {{ n.title }}
+
+접수 마감: {{ n.apply_end | kdate }}
+{% if n.map_url %}
+🗺️ 지도: {{ n.map_url }}
+{% endif %}
+🔗 공고 원문: {{ n.url }}

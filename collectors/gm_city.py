@@ -26,13 +26,13 @@ BOARDS = {
     "nftc": {
         "list": f"{BASE}/nftcBbs/BD_selectNftcBbsList.do",
         "params": {"q_nftcBbsCode": "1001", "q_rowPerPage": ROWS, "q_currPage": 1},
-        "detail": f"{BASE}/nftcBbs/BD_selectNftcBbsDetail.do?q_nftcBbsCode=1001&q_nftcBbsMgtno={id}",
+        "detail": BASE + "/nftcBbs/BD_selectNftcBbsDetail.do?q_nftcBbsCode=1001&q_nftcBbsMgtno={id}",
         "name": "고시공고",
     },
     "bbs": {
         "list": f"{BASE}/bbs/BD_selectBbsList.do",
         "params": {"q_bbsCode": "2032", "q_rowPerPage": ROWS, "q_currPage": 1},
-        "detail": f"{BASE}/bbs/BD_selectBbs.do?q_bbsCode=2032&q_bbscttSn={id}",
+        "detail": BASE + "/bbs/BD_selectBbs.do?q_bbsCode=2032&q_bbscttSn={id}",
         "name": "공지사항",
     },
 }

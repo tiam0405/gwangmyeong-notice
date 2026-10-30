@@ -131,8 +131,15 @@ def apply_period(detail: dict):
     return None, None
 
 
+CHANNEL = re.compile(r"인터넷|모바일|앱|App|방문|현장|우편|PC|청약플러스")
+
+
 def apply_method(detail: dict) -> str | None:
-    parts = [clean_text(e.get("ETC_CTS")) for e in detail.get("dsEtcInfo", [])]
+    """기타안내(ETC_CTS) 중 신청 경로를 말하는 줄만 + 접수처."""
+    parts = []
+    for e in detail.get("dsEtcInfo", []):
+        text = clean_text(e.get("ETC_CTS")) or ""
+        parts += [ln for ln in text.splitlines() if CHANNEL.search(ln)]
     for p in detail.get("dsCtrtPlc", []):
         place = " ".join(x for x in (p.get("CTRT_PLC_ADR"), p.get("CTRT_PLC_DTL_ADR")) if x)
         if place:

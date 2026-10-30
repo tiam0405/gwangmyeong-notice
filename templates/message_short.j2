@@ -1,0 +1,8 @@
+{# 문자(LMS 2000바이트)용 짧은 버전. 지도·신청방법 생략 #}
+[{{ badge }}] {{ n.title }}
+{% if n.apply_start or n.apply_end %}
+접수 {{ n.apply_start | kdate }}~{{ n.apply_end | kdate }}
+{% else %}
+접수 공고문 확인
+{% endif %}
+{{ n.url }}
