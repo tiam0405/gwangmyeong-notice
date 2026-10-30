@@ -29,15 +29,14 @@ def test_rows_grouped_by_pblanc_id():
     notices = rows_to_notices(gyeonggi_rows())
     titles = [n.title for n in notices]
     assert len([t for t in titles if "동탄지역 행복주택" in t]) == 1  # 8줄 → 1건
-    gwacheon = next(n for n in notices if n.source_id == "21483")
-    assert gwacheon.key == "myhome:21483"
+    gwacheon = next(n for n in notices if n.raw["pblanc_id"] == "21483")
+    assert gwacheon.key == "lh:2015122300020960"  # LH 공고는 LH 수집기와 같은 key
     assert gwacheon.posted_at == date(2026, 10, 28)
     assert gwacheon.apply_start == date(2026, 11, 10)
     assert gwacheon.apply_end == date(2026, 11, 12)
     assert gwacheon.region == "경기도 과천시 갈현동"
     assert gwacheon.address == "경기도 과천시 갈현동 579-5"
     assert gwacheon.institution == "LH"
-    assert gwacheon.raw["lh_pan_id"] == "2015122300020960"
     assert "총 1,424호" in gwacheon.summary
 
 

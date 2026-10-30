@@ -83,9 +83,11 @@ def group_to_notice(pblanc_id: str, rows: list[dict]) -> Notice:
     if units:
         summary_parts.append(f"총 {units:,}호")
 
+    # LH 공고는 LH 수집기와 같은 key("lh:{panId}")를 써서 main에서 하나로 합친다
+    pan_id = lh_pan_id(first.get("url"))
     return Notice(
-        source="myhome",
-        source_id=pblanc_id,
+        source="lh" if pan_id else "myhome",
+        source_id=pan_id or pblanc_id,
         title=(first.get("pblancNm") or "").strip(),
         url=pick_url(first),
         posted_at=parse_date(first.get("rcritPblancDe")),
@@ -99,7 +101,7 @@ def group_to_notice(pblanc_id: str, rows: list[dict]) -> Notice:
         raw={
             "rows": rows,
             "complexes": [{"name": n, "address": a} for n, a in complexes],
-            "lh_pan_id": lh_pan_id(first.get("url")),
+            "pblanc_id": pblanc_id,
             "signgu": signgu,
             "contact": first.get("refrnc"),
         },

@@ -10,7 +10,9 @@
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
+from datetime import date
 
 from models import Notice
 
@@ -25,7 +27,18 @@ CITY_NAMES = [
     "고양", "과천", "구리", "남양주", "오산", "시흥", "군포", "의왕", "하남", "용인",
     "파주", "이천", "안성", "김포", "화성", "광주", "양주", "포천", "여주", "연천",
     "가평", "양평",
+    "경기북부",  # 광명은 경기 남부
 ]
+CORRECTION_PREFIX = re.compile(r"^\s*\[정정공고\]\s*")
+
+
+def normalize_title(title: str) -> str:
+    """정정공고 표시와 공백을 지운 제목 (원공고와 정정공고를 같은 공고로 보기 위함)."""
+    return re.sub(r"\s+", "", CORRECTION_PREFIX.sub("", title))
+
+
+def is_correction(title: str) -> bool:
+    return bool(CORRECTION_PREFIX.match(title))
 
 
 @dataclass
@@ -52,7 +65,14 @@ def is_wide_area(notice: Notice) -> bool:
     return not notice.raw.get("signgu") and notice.source not in GWANGMYEONG_SOURCES
 
 
-def classify(notice: Notice, config: dict) -> Verdict:
+def classify(notice: Notice, config: dict, today: date | None = None) -> Verdict:
+    verdict = _classify(notice, config)
+    if verdict.alert and today and notice.apply_end and notice.apply_end < today:
+        verdict.alert, verdict.reason = False, "접수 마감"
+    return verdict
+
+
+def _classify(notice: Notice, config: dict) -> Verdict:
     f = config["filters"]
     title = notice.title
 
