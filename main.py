@@ -21,6 +21,7 @@ from collectors.gm_corp import GmCorpCollector
 from collectors.lh import LHCollector
 from collectors.myhome import MyHomeCollector
 from dedupe import SOURCE_PRIORITY, by_priority, find_duplicate
+from enrich import apply_guide
 from enrich.geocode import map_url
 from filters import classify, is_correction
 from models import Notice
@@ -129,7 +130,7 @@ def process(notices: list[Notice], store: Store, config: dict, today, seed: bool
         if not verdict.keep:
             log.debug("제외 (%s): %s", verdict.reason, notice.title)
             continue
-        extra = {"map_url": map_url(notice.address)}
+        extra = {"map_url": map_url(notice.address), "apply_method": apply_guide.build(notice)}
         if (dup := find_duplicate(notice, seen)):
             extra["duplicate_of"] = dup
             if verdict.alert:

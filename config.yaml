@@ -31,11 +31,6 @@ filters:
 
   housing_types: []   # 비어 있으면 임대 전체
 
-ai:
-  enabled: true             # ANTHROPIC_API_KEY가 없으면 자동으로 건너뜀
-  model: claude-haiku-5-5   # 첨부 공고문(PDF/HWP) 항목 추출용
-  # LH 첨부는 robots.txt(lhFile.do 금지)로 내려받지 않는다
-
 notify:
   reminder_days_before: 1   # 접수 마감 며칠 전 리마인더
 
