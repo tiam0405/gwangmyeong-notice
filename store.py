@@ -72,6 +72,17 @@ class Store:
             data = json.loads(self.path.read_text(encoding="utf-8"))
             self.updated_at = data.get("updated_at")
             self.records = {r["key"]: r for r in data.get("notices", [])}
+        self._loaded = self._snapshot()
+
+    def _sorted(self) -> list[dict]:
+        return sorted(self.records.values(), key=lambda r: (r.get("posted_at") or "", r["key"]), reverse=True)
+
+    def _snapshot(self) -> str:
+        return json.dumps(self._sorted(), ensure_ascii=False, sort_keys=True)
+
+    @property
+    def changed(self) -> bool:
+        return self._snapshot() != self._loaded
 
     def get(self, key: str) -> dict | None:
         return self.records.get(key)
@@ -147,11 +158,11 @@ class Store:
             del self.records[k]
         return len(old)
 
-    def save(self) -> None:
-        notices = sorted(
-            self.records.values(),
-            key=lambda r: (r.get("posted_at") or "", r["key"]),
-            reverse=True,
-        )
+    def save(self) -> bool:
+        """공고 내용이 바뀌었을 때만 쓴다 (매 실행마다 커밋이 생기지 않게). 썼으면 True."""
+        if not self.changed and self.path.exists():
+            return False
         self.updated_at = now_kst()
-        atomic_write_json(self.path, {"updated_at": self.updated_at, "notices": notices})
+        atomic_write_json(self.path, {"updated_at": self.updated_at, "notices": self._sorted()})
+        self._loaded = self._snapshot()
+        return True

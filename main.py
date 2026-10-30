@@ -143,18 +143,27 @@ def main() -> None:
     today = today_kst()
     process(notices, store, config, today, seed=seed and not args.dry_run)
 
+    failed = False
     if not seed or args.dry_run:
-        notifier = PrintNotifier() if args.dry_run else KakaoNotifier.from_env(
-            on_new_refresh_token=lambda t: save_refresh_token(t, ROOT / ".env"))
-        if notifier is None:
+        try:
+            notifier = PrintNotifier() if args.dry_run else KakaoNotifier.from_env(
+                on_new_refresh_token=lambda t: save_refresh_token(t, ROOT / ".env"))
+        except Exception:
+            # 로그인 만료 등. 수집 결과는 저장하고, 실행은 실패로 끝내 GitHub 실패 메일이 오게 한다
+            log.exception("카카오 로그인 실패 — tools/kakao_auth.py로 다시 로그인해야 할 수 있습니다")
+            notifier, failed = None, True
+        if notifier is None and not failed:
             log.error("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN이 없어 알림을 보내지 못했습니다")
-        else:
+            failed = True
+        elif notifier is not None:
             send_notifications(store, notifier, today, config["notify"]["reminder_days_before"])
 
     if args.dry_run:
         return
     store.archive_old(today)
-    store.save()
+    log.info("notices.json %s", "저장" if store.save() else "변경 없음")
+    if failed:
+        sys.exit(1)
 
 
 def process(notices: list[Notice], store: Store, config: dict, today, seed: bool = False) -> None:

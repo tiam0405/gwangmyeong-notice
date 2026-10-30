@@ -99,6 +99,22 @@ def test_crash_during_save_keeps_old_file(tmp_path, monkeypatch):
     assert list(tmp_path.glob("*.tmp")) == []
 
 
+def test_save_only_when_changed(tmp_path):
+    path = tmp_path / "notices.json"
+    s = Store(path)
+    s.upsert(make_notice())
+    assert s.save() is True
+    first = path.read_text(encoding="utf-8")
+
+    s2 = Store(path)
+    s2.upsert(make_notice())  # 같은 내용으로 다시 수집
+    assert s2.save() is False
+    assert path.read_text(encoding="utf-8") == first  # updated_at도 그대로
+
+    s2.mark_notified("lh:1")
+    assert s2.save() is True
+
+
 def test_archive_old(tmp_path, monkeypatch):
     monkeypatch.setattr(store_mod, "ARCHIVE_THRESHOLD", 2)
     s = Store(tmp_path / "notices.json")

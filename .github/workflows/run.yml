@@ -1,0 +1,61 @@
+name: 광명 임대공고 수집·알림
+
+on:
+  schedule:
+    # GitHub은 UTC 기준 (한국 시간 = UTC + 9).
+    # 정각·30분은 전 세계 예약 실행이 몰려 늦어지기 쉬워 13분으로 둔다
+    - cron: "13 1 * * *"   # 오전 10:13
+    - cron: "13 3 * * *"   # 낮 12:13
+    - cron: "13 9 * * *"   # 저녁 6:13
+  workflow_dispatch:       # Actions 탭에서 수동 실행
+
+permissions:
+  contents: write          # data/notices.json 커밋
+
+concurrency:
+  group: collect           # 동시에 두 번 돌지 않게
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 수집 → 알림
+        env:
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          GH_SECRETS_TOKEN: ${{ secrets.GH_SECRETS_TOKEN }}
+        run: python main.py
+
+      - name: 공고 목록 저장 (바뀐 경우만)
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "chore: update notices"
+            git push
+          fi
+
+      - name: 실행 로그 보관 (7일)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: logs/
+          retention-days: 7
