@@ -5,7 +5,7 @@ from pathlib import Path
 
 import main
 from collectors.myhome import parse_response, rows_to_notices
-from filters import SENIOR_TAG, classify
+from filters import CHECK_TAG, SENIOR_TAG, classify
 
 FIXTURES = Path(__file__).parent / "fixtures"
 CONFIG = main.load_config()
@@ -80,6 +80,30 @@ def test_youth_and_senior_together_alerts():
 def test_daycare_excluded():
     n = rows_to_notices([_gm_row(pblancNm="광명하안 가정어린이집 운영예정자 모집공고")])[0]
     assert not classify(n, CONFIG).keep
+
+
+def _wide_row(title, suply="매입임대"):
+    row = _gm_row(pblancNm=title, suplyTyNm=suply)
+    row.update(signguNm="", refrnLegaldongNm="", fullAdres="", hsmpNm="")
+    return row
+
+
+def test_regional_without_city_asks_to_check():
+    n = rows_to_notices([_wide_row("[경기남부] 일반 매입임대주택 입주자 모집 공고")])[0]
+    v = classify(n, CONFIG)
+    assert v.keep and v.alert
+    assert CHECK_TAG in v.tags
+
+
+def test_regional_naming_other_cities_dropped():
+    n = rows_to_notices([_wide_row("[인천지역본부] 일반 매입임대주택 입주자 모집 공고(인천,부천)")])[0]
+    assert not classify(n, CONFIG).keep
+
+
+def test_regional_naming_gwangmyeong_is_confirmed():
+    n = rows_to_notices([_wide_row("[경기남부] 매입임대 입주자 모집(안양,광명)")])[0]
+    v = classify(n, CONFIG)
+    assert v.alert and CHECK_TAG not in v.tags
 
 
 def test_bucheon_okgil_not_gwangmyeong():
