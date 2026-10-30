@@ -191,7 +191,8 @@ def process(notices: list[Notice], store: Store, config: dict, today, seed: bool
         if not verdict.keep:
             log.debug("제외 (%s): %s", verdict.reason, notice.title)
             continue
-        extra = {"map_url": map_url(notice.address), "apply_method": apply_guide.build(notice)}
+        extra = {"map_url": map_url(notice.address), "apply_method": apply_guide.build(notice),
+                 "alert_reason": None if verdict.alert else verdict.reason}
         if (dup := find_duplicate(notice, seen)):
             extra["duplicate_of"] = dup
             if verdict.alert:

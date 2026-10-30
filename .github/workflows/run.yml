@@ -11,6 +11,8 @@ on:
 
 permissions:
   contents: write          # data/notices.json 커밋
+  pages: write             # GitHub Pages 배포
+  id-token: write
 
 concurrency:
   group: collect           # 동시에 두 번 돌지 않게
@@ -52,6 +54,15 @@ jobs:
             git push
           fi
 
+      - name: 웹 화면 만들기
+        if: always()
+        run: sh build_site.sh
+
+      - uses: actions/upload-pages-artifact@v3
+        if: always()
+        with:
+          path: _site
+
       - name: 실행 로그 보관 (7일)
         if: always()
         uses: actions/upload-artifact@v4
@@ -59,3 +70,15 @@ jobs:
           name: logs
           path: logs/
           retention-days: 7
+
+  deploy:
+    needs: collect
+    # 수집이 일부 실패해도 저장된 목록으로 화면은 올린다
+    if: always() && needs.collect.result != 'cancelled'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,1 +1,86 @@
-/* 단계 11 */
+/* 부모님도 보기 편하게: 큰 글씨, 넓은 터치 영역, 높은 대비 */
+:root {
+  --bg: #f6f7f9;
+  --card: #fff;
+  --text: #1a1a1a;
+  --muted: #555;
+  --line: #ddd;
+  --open: #0a7d32;
+  --soon: #1d5fd1;
+  --closed: #888;
+  --urgent: #c62828;
+  --senior: #8a4b00;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 18px/1.6 -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+header, .filters, .count, main, footer { max-width: 760px; margin: 0 auto; padding: 0 14px; }
+
+header { padding-top: 18px; }
+h1 { font-size: 1.5rem; margin: 0 0 4px; }
+.updated { margin: 0 0 12px; color: var(--muted); font-size: 0.95rem; }
+.updated.stale { color: var(--urgent); font-weight: 700; }
+
+.filters { display: grid; gap: 8px; margin-bottom: 8px; }
+.check { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.check input { width: 24px; height: 24px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+select, input[type=search] {
+  width: 100%; min-height: 48px; font-size: 1rem; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 10px; background: #fff;
+}
+
+.count { color: var(--muted); font-size: 0.95rem; margin: 8px auto; }
+
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  margin-bottom: 12px; overflow: hidden;
+}
+.card.urgent { border: 2px solid var(--urgent); }
+.card.closed { opacity: 0.7; }
+
+.head {
+  display: block; width: 100%; text-align: left; background: none; border: 0;
+  padding: 14px 16px; font: inherit; color: inherit; cursor: pointer;
+}
+.title { font-size: 1.15rem; margin: 6px 0; line-height: 1.45; }
+.meta { margin: 2px 0; color: var(--muted); }
+.period { color: var(--text); font-weight: 600; }
+
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 0.85rem; font-weight: 700; border: 1px solid currentColor;
+}
+.badge.status-open { color: #fff; background: var(--open); border-color: var(--open); }
+.badge.status-soon { color: #fff; background: var(--soon); border-color: var(--soon); }
+.badge.status-closed { color: var(--closed); }
+.badge.status-unknown { color: var(--muted); }
+.badge.urgent { color: #fff; background: var(--urgent); border-color: var(--urgent); }
+.badge.source { color: #333; }
+.badge.senior { color: var(--senior); }
+.badge.tag { color: var(--muted); font-weight: 500; }
+
+.detail { padding: 0 16px 16px; border-top: 1px solid var(--line); }
+.detail h3 { font-size: 1rem; margin: 14px 0 4px; }
+.detail p { margin: 4px 0; white-space: pre-line; }
+.links { display: grid; gap: 8px; margin-top: 14px; }
+.links a {
+  display: block; text-align: center; padding: 12px; border-radius: 10px;
+  background: #1d5fd1; color: #fff; text-decoration: none; font-weight: 700;
+}
+.links a.secondary { background: #fff; color: #1d5fd1; border: 1px solid #1d5fd1; }
+.files a { color: #1d5fd1; }
+.note { color: var(--muted); font-size: 0.9rem; }
+
+.empty { text-align: center; color: var(--muted); padding: 40px 0; }
+footer { color: var(--muted); font-size: 0.9rem; padding-bottom: 40px; }
