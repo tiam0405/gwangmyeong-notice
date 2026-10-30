@@ -49,6 +49,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     env_path = ROOT / ".env"
     load_dotenv(env_path)
     key = os.environ.get("KAKAO_REST_API_KEY", "").strip()
