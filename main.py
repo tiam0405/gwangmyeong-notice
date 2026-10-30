@@ -19,6 +19,8 @@ from collectors.gm_city import GmCityCollector
 from collectors.gm_corp import GmCorpCollector
 from collectors.lh import LHCollector
 from collectors.myhome import MyHomeCollector
+from filters import classify
+from store import Store, today_kst
 
 ROOT = Path(__file__).parent
 COLLECTORS: dict[str, type[BaseCollector]] = {
@@ -79,7 +81,25 @@ def main() -> None:
 
     notices = collect(config)
     log.info("총 %d건 수집 (seed=%s)", len(notices), args.seed)
-    # TODO 단계 3~10: 필터 → store 저장 → 알림 → 리마인더
+
+    store = Store(ROOT / "data" / "notices.json")
+    kept = new = 0
+    for notice in notices:
+        verdict = classify(notice, config)
+        if not verdict.keep:
+            log.debug("제외 (%s): %s", verdict.reason, notice.title)
+            continue
+        kept += 1
+        _, is_new = store.upsert(notice, alert=verdict.alert, tags=verdict.tags)
+        if is_new:
+            new += 1
+            log.info("신규%s: %s", "" if verdict.alert else f" (알림 제외: {verdict.reason})", notice.title)
+            if args.seed:
+                store.mark_notified(notice.key, seeded=True)
+    log.info("광명 대상 %d건, 신규 %d건", kept, new)
+    # TODO 단계 5~10: 지도 링크·신청방법 보강 → 알림 → 리마인더
+    store.archive_old(today_kst())
+    store.save()
 
 
 if __name__ == "__main__":

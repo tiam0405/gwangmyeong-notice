@@ -1,13 +1,28 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
+from datetime import date
 
 import requests
 
 from models import Notice
 
 log = logging.getLogger(__name__)
+
+
+def parse_date(value) -> date | None:
+    """'20261110', '2026.11.10', '2026-11-10', '2026-11-10 10:00' → date. 못 읽으면 None."""
+    if not value:
+        return None
+    digits = re.sub(r"\D", "", str(value))[:8]
+    if len(digits) != 8:
+        return None
+    try:
+        return date(int(digits[:4]), int(digits[4:6]), int(digits[6:]))
+    except ValueError:
+        return None
 
 
 class BaseCollector:
