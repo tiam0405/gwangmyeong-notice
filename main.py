@@ -27,7 +27,8 @@ from enrich.geocode import map_url
 from filters import classify, is_correction
 from models import Notice
 from notifiers.base import BaseNotifier
-from notifiers.telegram import TelegramNotifier
+from notifiers.kakao import KakaoNotifier
+from notifiers.token_store import save_refresh_token
 from store import Store, today_kst
 
 ROOT = Path(__file__).parent
@@ -114,10 +115,10 @@ def send_notifications(store: Store, notifier: BaseNotifier, today, days_before:
     """신규 알림 → 리마인더. 보내기에 성공한 것만 기록한다 (실패하면 다음 실행에서 다시)."""
     pending = sorted(store.pending_notifications(), key=lambda r: r.get("posted_at") or "")
     for rec in pending:
-        if notifier.send(formatter.render_new(rec)):
+        if notifier.send(formatter.render_kakao(rec), rec["url"]):
             store.mark_notified(rec["key"])
     for rec in store.pending_reminders(today, days_before):
-        if notifier.send(formatter.render_reminder(rec, today)):
+        if notifier.send(formatter.render_kakao_reminder(rec, today), rec["url"]):
             store.mark_reminded(rec["key"])
     log.info("알림 %d건, 리마인더 처리 완료", len(pending))
 
@@ -143,9 +144,10 @@ def main() -> None:
     process(notices, store, config, today, seed=seed and not args.dry_run)
 
     if not seed or args.dry_run:
-        notifier = PrintNotifier() if args.dry_run else TelegramNotifier.from_env()
+        notifier = PrintNotifier() if args.dry_run else KakaoNotifier.from_env(
+            on_new_refresh_token=lambda t: save_refresh_token(t, ROOT / ".env"))
         if notifier is None:
-            log.error("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_IDS가 없어 알림을 보내지 못했습니다")
+            log.error("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN이 없어 알림을 보내지 못했습니다")
         else:
             send_notifications(store, notifier, today, config["notify"]["reminder_days_before"])
 

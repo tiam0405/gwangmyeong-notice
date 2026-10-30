@@ -52,9 +52,9 @@ def test_reminder():
     assert formatter.render_reminder(rec(), date(2026, 11, 13)).startswith("⏰ [마감 오늘]")
 
 
-def test_telegram_limit():
+def test_long_limit():
     text = formatter.render_new(rec(apply_method="가" * 5000))
-    assert len(text) <= formatter.TELEGRAM_LIMIT
+    assert len(text) <= formatter.LONG_LIMIT
 
 
 def test_short_version_fits_lms():

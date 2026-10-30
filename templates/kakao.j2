@@ -1,0 +1,11 @@
+{# 카카오톡 나에게 보내기 (본문 최대 200자). 자세한 내용은 "공고 보기" 버튼으로 #}
+[{{ badge }}] {{ title }}
+{% for tag in n.tags %}
+{{ tag_icon(tag) }} {{ tag }}
+{% endfor %}
+{% if n.apply_start or n.apply_end %}
+⏰ 접수 {{ n.apply_start | sdate }} ~ {{ n.apply_end | sdate }}
+{% else %}
+⏰ 접수기간: 공고문 확인
+{% endif %}
+📍 {{ n.region }}

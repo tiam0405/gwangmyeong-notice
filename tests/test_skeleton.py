@@ -19,5 +19,5 @@ def test_notices_json_is_valid():
 
 def test_no_secrets_in_tracked_config():
     text = (ROOT / "config.yaml").read_text(encoding="utf-8")
-    for name in ("DATA_GO_KR_KEY=", "ANTHROPIC_API_KEY=", "TELEGRAM_BOT_TOKEN="):
+    for name in ("DATA_GO_KR_KEY=", "KAKAO_REST_API_KEY=", "KAKAO_REFRESH_TOKEN=", "GH_SECRETS_TOKEN="):
         assert name not in text
