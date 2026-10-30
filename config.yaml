@@ -1,0 +1,45 @@
+# 광명시 임대주택 공고 알림 설정
+# 수신자(텔레그램 chat_id, 전화번호)와 API 키는 여기에 넣지 않는다 → .env / GitHub Secrets
+
+sources:
+  myhome:  {enabled: true}    # 메인. LH·광명도시공사 공고 포함
+  lh:      {enabled: true}    # 마이홈 LH 공고의 상세 보강 (접수처, 일정, 신청방법)
+  gh:      {enabled: true}    # GH 청약센터. 마이홈에 GH 공고가 거의 없어 별도 수집
+  gm_city:
+    enabled: true             # 광명시청 고시공고·공지사항
+    search_keywords: [임대, 입주자, 행복주택, 매입임대, 전세임대, 예비입주]
+    exclude_keywords: [공시송달, 과태료, 임대차계약, 매각, 사무실, 오피스, 채용, 창업]
+  gm_corp: {enabled: true}    # 광명도시공사 청약센터. 마이홈 누락분·첨부 공고문 보강
+
+filters:
+  # 광명 판정: 제목·본문·주소·주택 목록에 하나라도 있으면 광명 공고
+  region_keywords: [광명, 철산, 하안, 소하, 일직, 학온, 노온사, 옥길]
+
+  # 광역 공고라도 광명에서 집을 직접 구할 수 있는 유형 → 광명 표기 없어도 포함
+  wide_area_types: [전세임대]
+
+  # 이 대상만을 위한 공고는 알림 제외 (웹 목록에는 남김)
+  # 단, senior_keywords가 함께 있으면 제외하지 않는다 (예: "청년·고령자 매입임대")
+  exclude_target_keywords: [청년, 신혼, 예비신혼, 신생아, 대학생, 다자녀, 신혼희망타운]
+
+  # 임대주택이 아닌 모집 (어린이집 운영자, 상가 등) → 알림·목록 모두 제외
+  exclude_title_keywords: [어린이집, 상가, 점포, 운영자, 공시송달, 과태료]
+
+  # 알림에 "고령자 해당 가능" 표시
+  senior_keywords: [고령자, 고령자복지주택, 영구임대, 국민임대, 어르신, 노인, "65세"]
+
+  housing_types: []   # 비어 있으면 임대 전체
+
+ai:
+  enabled: true             # ANTHROPIC_API_KEY가 없으면 자동으로 건너뜀
+  model: claude-haiku-5-5   # 첨부 공고문(PDF/HWP) 항목 추출용
+  # LH 첨부는 robots.txt(lhFile.do 금지)로 내려받지 않는다
+
+notify:
+  reminder_days_before: 1   # 접수 마감 며칠 전 리마인더
+
+crawl:
+  user_agent: "gwangmyeong-notice/0.1 (+personal rental notice alert)"
+  min_interval_sec: 1.0
+  max_retries: 3
+  timeout_sec: 30
