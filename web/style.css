@@ -76,6 +76,8 @@ select, input[type=search] {
 .badge.urgent { color: #fff; background: var(--urgent); border-color: var(--urgent); }
 .badge.source { color: #333; }
 .badge.gm { color: #fff; background: var(--gm); border-color: var(--gm); }
+.badge.monthly { color: #6a1b9a; }
+.badge.jeonse { color: #00695c; }
 .badge.senior { color: var(--senior); }
 .badge.tag { color: var(--muted); font-weight: 500; }
 

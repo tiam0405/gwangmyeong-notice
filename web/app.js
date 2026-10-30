@@ -10,6 +10,10 @@ const YOUNG_ONLY = "청년·신혼 등 대상";
 const STALE_HOURS = 30; // 마지막 확인이 이보다 오래되면 경고 표시
 const UNSURE_TAGS = ["광명 포함 여부 확인 필요", "광역 공고"]; // 광명 확정이 아닌 표시
 const DEMO = new URLSearchParams(location.search).has("demo");
+// 유형 목록은 지금 공고가 없어도 항상 보여준다 (부모님께 익숙한 순서)
+const HOUSING_TYPES = ["영구임대", "국민임대", "행복주택", "매입임대", "통합공공임대", "전세임대", "장기전세"];
+// 보증금 + 매달 임대료를 내는 유형
+const MONTHLY_TYPES = ["영구임대", "국민임대", "행복주택", "매입임대", "통합공공임대", "공공임대", "50년임대", "10년임대"];
 
 let notices = [];
 
@@ -43,6 +47,14 @@ function status(n, today) {
   if (start && today < start) return { key: "soon", label: "접수예정" };
   const left = end ? daysBetween(today, end) : null;
   return { key: "open", label: "접수중", left };
+}
+
+// 월세형/전세형. "든든전세"·"매입임대Ⅱ(전세형)"처럼 제목에 전세가 있으면 전세형
+function rentKind(n) {
+  const text = `${n.housing_type || ""} ${n.title || ""}`;
+  if (/전세/.test(text)) return "전세형";
+  if (MONTHLY_TYPES.some((t) => text.includes(t))) return "월세형";
+  return null;
 }
 
 // 광명 확정: "확인 필요"·"광역" 표시가 없고, 광명 기관 공고이거나 지역·주소에 광명이 있음
@@ -143,6 +155,7 @@ function render() {
   const hideYoung = document.getElementById("f-hide-young").checked;
   const source = document.getElementById("f-source").value;
   const type = document.getElementById("f-type").value;
+  const rent = document.getElementById("f-rent").value;
   const q = document.getElementById("f-q").value.trim().toLowerCase();
 
   const shown = notices.filter((n) => {
@@ -152,6 +165,7 @@ function render() {
     if (hideYoung && n.alert_reason === YOUNG_ONLY) return false;
     if (source && n.source !== source) return false;
     if (type && n.housing_type !== type) return false;
+    if (rent && rentKind(n) !== rent) return false;
     if (q) {
       const hay = [n.title, n.region, n.summary, n.housing_type, n.institution, n.target]
         .filter(Boolean).join(" ").toLowerCase();
@@ -182,6 +196,8 @@ function render() {
     badges.append(badge(st.label, "status-" + st.key));
     if (urgent) badges.append(badge(st.left === 0 ? "오늘 마감" : `마감 D-${st.left}`, "urgent"));
     if (gmOpen) badges.append(badge("광명", "gm"));
+    const kind = rentKind(n);
+    if (kind) badges.append(badge(kind, kind === "월세형" ? "monthly" : "jeonse"));
     badges.append(badge(SOURCE_NAMES[n.source] || n.institution || "공고", "source"));
     (n.tags || []).forEach((t) => badges.append(badge(t, t.includes("고령자") ? "senior" : "tag")));
 
@@ -201,9 +217,10 @@ function render() {
   });
 }
 
-function fillOptions(id, values, labels = {}) {
+function fillOptions(id, values, labels = {}, order = []) {
   const sel = document.getElementById(id);
-  [...new Set(values.filter(Boolean))].sort().forEach((v) => {
+  const rank = (v) => (order.includes(v) ? order.indexOf(v) : order.length);
+  [...new Set(values.filter(Boolean))].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b)).forEach((v) => {
     const o = el("option", labels[v] || v);
     o.value = v;
     sel.append(o);
@@ -239,12 +256,12 @@ async function main() {
       (b.posted_at || "").localeCompare(a.posted_at || ""));
     showUpdated(st.checked_at, data.updated_at);
     fillOptions("f-source", notices.map((n) => n.source), SOURCE_NAMES);
-    fillOptions("f-type", notices.map((n) => n.housing_type));
+    fillOptions("f-type", HOUSING_TYPES.concat(notices.map((n) => n.housing_type)), {}, HOUSING_TYPES);
   } catch (e) {
     document.getElementById("updated").textContent = "공고 목록을 불러오지 못했습니다. 잠시 후 다시 열어 주세요.";
     return;
   }
-  ["f-open", "f-hide-young", "f-source", "f-type"].forEach((id) =>
+  ["f-open", "f-hide-young", "f-source", "f-type", "f-rent"].forEach((id) =>
     document.getElementById(id).addEventListener("change", render));
   document.getElementById("f-q").addEventListener("input", render);
   render();
