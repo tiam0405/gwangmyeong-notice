@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T14:22:33+09:00",
+  "updated_at": "2026-10-30T14:56:45+09:00",
   "notices": [
     {
       "key": "lh:2015122300020927",
@@ -27,7 +27,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "gh:sr7155-823",
@@ -65,7 +66,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300020802",
@@ -92,7 +94,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "lh:2015122300020769",
@@ -120,7 +123,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "lh:2015122300020731",
@@ -147,7 +151,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "lh:2015122300020690",
@@ -174,7 +179,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300020688",
@@ -201,7 +207,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300020687",
@@ -228,7 +235,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "gh:sr7155-812",
@@ -261,7 +269,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "마감일 없음 + 60일 지난 공고"
     },
     {
       "key": "gh:sr7155-803",
@@ -288,7 +297,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "마감일 없음 + 60일 지난 공고"
     },
     {
       "key": "gm_corp:154",
@@ -343,7 +353,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "gm_corp:153",
@@ -396,7 +407,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "gh:sr7155-795",
@@ -423,7 +435,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "접수 마감"
     },
     {
       "key": "gh:sr7155-792",
@@ -450,7 +463,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "마감일 없음 + 60일 지난 공고"
     },
     {
       "key": "gh:sr7155-787",
@@ -477,7 +491,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300019551",
@@ -504,7 +519,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300019550",
@@ -531,7 +547,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300019546",
@@ -558,7 +575,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "lh:2015122300019376",
@@ -585,7 +603,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "gh:sr7155-770",
@@ -612,7 +631,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     },
     {
       "key": "gh:sr7155-708",
@@ -639,7 +659,8 @@
       "notified_at": "2026-10-30T14:22:33+09:00",
       "reminded_at": null,
       "first_seen_at": "2026-10-30T14:22:33+09:00",
-      "seeded": true
+      "seeded": true,
+      "alert_reason": "청년·신혼 등 대상"
     }
   ]
 }
