@@ -8,6 +8,8 @@ const WEEKDAYS = "일월화수목금토";
 const URGENT_DAYS = 3;
 const YOUNG_ONLY = "청년·신혼 등 대상";
 const STALE_HOURS = 30; // 마지막 확인이 이보다 오래되면 경고 표시
+const UNSURE_TAGS = ["광명 포함 여부 확인 필요", "광역 공고"]; // 광명 확정이 아닌 표시
+const DEMO = new URLSearchParams(location.search).has("demo");
 
 let notices = [];
 
@@ -41,6 +43,32 @@ function status(n, today) {
   if (start && today < start) return { key: "soon", label: "접수예정" };
   const left = end ? daysBetween(today, end) : null;
   return { key: "open", label: "접수중", left };
+}
+
+// 광명 확정: "확인 필요"·"광역" 표시가 없고, 광명 기관 공고이거나 지역·주소에 광명이 있음
+function isGwangmyeong(n) {
+  if ((n.tags || []).some((t) => UNSURE_TAGS.some((u) => t.startsWith(u)))) return false;
+  if (n.source === "gm_city" || n.source === "gm_corp") return true;
+  return /광명/.test(`${n.region || ""} ${n.address || ""}`);
+}
+
+// ?demo=1 일 때만 보이는 테스트 공고 (실제 데이터·알림과 무관)
+function demoNotices(today) {
+  const day = (d) => new Date(Date.parse(today) + d * 86400e3).toISOString().slice(0, 10);
+  const base = { url: location.href.split("?")[0], institution: "테스트", tags: [], alert_reason: null };
+  return [
+    { ...base, key: "demo:1", source: "gm_city", title: "[테스트] 광명하안 영구임대주택 예비입주자 모집 (접수중·광명 확정)",
+      posted_at: day(-3), apply_start: day(-1), apply_end: day(10), region: "경기도 광명시 하안동",
+      address: "경기도 광명시 하안로 60", map_url: null, housing_type: "영구임대", target: "고령자, 수급자",
+      summary: "테스트용 카드입니다", apply_method: "신청장소: 주민등록지 행정복지센터", tags: ["고령자 해당 가능"] },
+    { ...base, key: "demo:2", source: "gm_corp", title: "[테스트] 광명소하 행복주택 입주자 모집 (접수예정·광명 확정)",
+      posted_at: day(-1), apply_start: day(5), apply_end: day(7), region: "경기도 광명시", housing_type: "행복주택" },
+    { ...base, key: "demo:3", source: "lh", title: "[테스트] [경기남부] 매입임대주택 입주자 모집 (접수중·광명 불확실 → 기본 색)",
+      posted_at: day(-2), apply_start: day(-1), apply_end: day(2), region: "경기도", housing_type: "매입임대",
+      tags: ["광명 포함 여부 확인 필요"] },
+    { ...base, key: "demo:4", source: "gm_city", title: "[테스트] 광명 국민임대 예비입주자 모집 (마감·광명 → 기본 색)",
+      posted_at: day(-20), apply_start: day(-15), apply_end: day(-10), region: "경기도 광명시", housing_type: "국민임대" },
+  ];
 }
 
 function safeUrl(url) {
@@ -147,10 +175,13 @@ function render() {
     const urgent = st.key === "open" && st.left != null && st.left <= URGENT_DAYS;
     if (urgent) card.classList.add("urgent");
     if (st.key === "closed") card.classList.add("closed");
+    const gmOpen = (st.key === "open" || st.key === "soon") && isGwangmyeong(n);
+    if (gmOpen) card.classList.add("gm-open");
 
     const badges = card.querySelector(".badges");
     badges.append(badge(st.label, "status-" + st.key));
     if (urgent) badges.append(badge(st.left === 0 ? "오늘 마감" : `마감 D-${st.left}`, "urgent"));
+    if (gmOpen) badges.append(badge("광명", "gm"));
     badges.append(badge(SOURCE_NAMES[n.source] || n.institution || "공고", "source"));
     (n.tags || []).forEach((t) => badges.append(badge(t, t.includes("고령자") ? "senior" : "tag")));
 
@@ -200,6 +231,10 @@ async function main() {
       fetch("data/notices.json", { cache: "no-store" }).then((r) => r.json()),
       fetch("data/status.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
     ]);
+    if (DEMO) {
+      data.notices = demoNotices(todayKST()).concat(data.notices || []);
+      document.getElementById("demo").hidden = false;
+    }
     notices = (data.notices || []).slice().sort((a, b) =>
       (b.posted_at || "").localeCompare(a.posted_at || ""));
     showUpdated(st.checked_at, data.updated_at);

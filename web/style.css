@@ -10,6 +10,8 @@
   --closed: #888;
   --urgent: #c62828;
   --senior: #8a4b00;
+  --gm: #0a7d32;
+  --gm-bg: #eaf7ee;
 }
 
 * { box-sizing: border-box; }
@@ -40,11 +42,17 @@ select, input[type=search] {
 }
 
 .count { color: var(--muted); font-size: 0.95rem; margin: 8px auto; }
+.legend { max-width: 760px; margin: 4px auto; padding: 0 14px; color: var(--muted); font-size: 0.9rem; }
+.swatch { display: inline-block; width: 14px; height: 14px; vertical-align: -2px;
+  background: var(--gm-bg); border: 2px solid var(--gm); border-radius: 4px; }
+.demo { max-width: 732px; margin: 8px auto; padding: 8px 12px; background: #fff3cd;
+  border: 1px solid #e0b100; border-radius: 10px; font-weight: 700; }
 
 .card {
   background: var(--card); border: 1px solid var(--line); border-radius: 14px;
   margin-bottom: 12px; overflow: hidden;
 }
+.card.gm-open { background: var(--gm-bg); border: 2px solid var(--gm); }
 .card.urgent { border: 2px solid var(--urgent); }
 .card.closed { opacity: 0.7; }
 
@@ -67,6 +75,7 @@ select, input[type=search] {
 .badge.status-unknown { color: var(--muted); }
 .badge.urgent { color: #fff; background: var(--urgent); border-color: var(--urgent); }
 .badge.source { color: #333; }
+.badge.gm { color: #fff; background: var(--gm); border-color: var(--gm); }
 .badge.senior { color: var(--senior); }
 .badge.tag { color: var(--muted); font-weight: 500; }
 
