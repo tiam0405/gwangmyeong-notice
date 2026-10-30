@@ -21,10 +21,13 @@ from collectors.gm_corp import GmCorpCollector
 from collectors.lh import LHCollector
 from collectors.myhome import MyHomeCollector
 from dedupe import SOURCE_PRIORITY, by_priority, find_duplicate
+import formatter
 from enrich import apply_guide
 from enrich.geocode import map_url
 from filters import classify, is_correction
 from models import Notice
+from notifiers.base import BaseNotifier
+from notifiers.telegram import TelegramNotifier
 from store import Store, today_kst
 
 ROOT = Path(__file__).parent
@@ -97,9 +100,32 @@ def merge_notices(notices: list[Notice]) -> list[Notice]:
     return list(merged.values())
 
 
+class PrintNotifier(BaseNotifier):
+    """--dry-run: 보내지 않고 화면에 출력만."""
+
+    name = "print"
+
+    def send(self, text: str) -> bool:
+        print(text, "\n" + "-" * 40)
+        return True
+
+
+def send_notifications(store: Store, notifier: BaseNotifier, today, days_before: int) -> None:
+    """신규 알림 → 리마인더. 보내기에 성공한 것만 기록한다 (실패하면 다음 실행에서 다시)."""
+    pending = sorted(store.pending_notifications(), key=lambda r: r.get("posted_at") or "")
+    for rec in pending:
+        if notifier.send(formatter.render_new(rec)):
+            store.mark_notified(rec["key"])
+    for rec in store.pending_reminders(today, days_before):
+        if notifier.send(formatter.render_reminder(rec, today)):
+            store.mark_reminded(rec["key"])
+    log.info("알림 %d건, 리마인더 처리 완료", len(pending))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", action="store_true", help="알림 없이 저장만")
+    parser.add_argument("--dry-run", action="store_true", help="보내지 않고 메시지를 화면에 출력 (저장도 안 함)")
     args = parser.parse_args()
 
     load_dotenv(ROOT / ".env")
@@ -107,12 +133,24 @@ def main() -> None:
     config = load_config()
 
     notices = merge_notices(collect(config))
-    log.info("총 %d건 수집 (seed=%s)", len(notices), args.seed)
-
     store = Store(ROOT / "data" / "notices.json")
+    seed = args.seed or not store.records
+    if seed and not args.seed:
+        log.warning("저장된 공고가 없어 첫 실행으로 보고 seed 모드로 실행합니다 (알림 없음)")
+    log.info("총 %d건 수집 (seed=%s)", len(notices), seed)
+
     today = today_kst()
-    process(notices, store, config, today, seed=args.seed)
-    # TODO 단계 5~10: 지도 링크·신청방법 보강 → 알림 → 리마인더
+    process(notices, store, config, today, seed=seed and not args.dry_run)
+
+    if not seed or args.dry_run:
+        notifier = PrintNotifier() if args.dry_run else TelegramNotifier.from_env()
+        if notifier is None:
+            log.error("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_IDS가 없어 알림을 보내지 못했습니다")
+        else:
+            send_notifications(store, notifier, today, config["notify"]["reminder_days_before"])
+
+    if args.dry_run:
+        return
     store.archive_old(today)
     store.save()
 
