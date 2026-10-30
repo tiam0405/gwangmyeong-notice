@@ -54,7 +54,9 @@ class GmCityCollector(BaseCollector):
         notices = []
         for board, spec in BOARDS.items():
             html = self.request("GET", spec["list"], params=spec["params"]).text
-            for row in parse_list(html, board):
+            rows = parse_list(html, board)
+            self.raw_count += len(rows)
+            for row in rows:
                 if not is_housing_title(row["title"], cfg["search_keywords"], cfg["exclude_keywords"]):
                     continue
                 detail = {}

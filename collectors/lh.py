@@ -42,7 +42,9 @@ class LHCollector(BaseCollector):
         if not self.key:
             raise RuntimeError("DATA_GO_KR_KEY 환경변수가 없습니다")
         notices = []
-        for row in self.list_rows():
+        rows = self.list_rows()
+        self.raw_count = len(rows)
+        for row in rows:
             detail = {}
             if row.get("PAN_SS") in OPEN_STATES:
                 try:

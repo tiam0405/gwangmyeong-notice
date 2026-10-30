@@ -41,6 +41,7 @@ class GHCollector(BaseCollector):
         for row in parse_list(self.get_list("sr7150", searchArea=GWANGMYEONG_AREA), "sr7150"):
             rows.setdefault(row["id"], row)
 
+        self.raw_count = len(rows)
         today = today_kst()
         notices = []
         for row in rows.values():

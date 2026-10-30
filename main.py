@@ -9,6 +9,7 @@ import argparse
 import logging
 import sys
 from dataclasses import fields
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import yaml
@@ -25,6 +26,7 @@ import formatter
 from enrich import apply_guide
 from enrich.geocode import map_url
 from filters import classify, is_correction
+from health import ACTIONS_URL, Health, SourceStatus
 from models import Notice
 from notifiers.base import BaseNotifier
 from notifiers.kakao import KakaoNotifier
@@ -57,26 +59,29 @@ def setup_logging() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         handlers=[
             logging.StreamHandler(),
-            logging.FileHandler(ROOT / "logs" / "run.log", encoding="utf-8"),
+            # 1MB씩 최대 3개 파일로 돌려 쓴다
+            RotatingFileHandler(ROOT / "logs" / "run.log", maxBytes=1_000_000, backupCount=3,
+                                encoding="utf-8"),
         ],
     )
 
 
-def collect(config: dict) -> list:
+def collect(config: dict) -> tuple[list[Notice], list[SourceStatus]]:
     """활성화된 수집기를 모두 돌린다. 한 소스가 실패해도 나머지는 계속."""
-    notices = []
+    notices, statuses = [], []
     for name, cls in COLLECTORS.items():
         if not config["sources"].get(name, {}).get("enabled"):
             continue
+        collector = cls(config)
         try:
-            found = cls(config).fetch()
-            log.info("%s: %d건", name, len(found))
+            found = collector.fetch()
+            log.info("%s: %d건 (원본 %d줄)", name, len(found), collector.raw_count)
             notices.extend(found)
-        except NotImplementedError:
-            log.info("%s: 아직 구현되지 않음", name)
-        except Exception:
+            statuses.append(SourceStatus(name, collector.raw_count))
+        except Exception as e:
             log.exception("%s 수집 실패", name)
-    return notices
+            statuses.append(SourceStatus(name, collector.raw_count, f"{type(e).__name__}: {e}"))
+    return notices, statuses
 
 
 def merge_notices(notices: list[Notice]) -> list[Notice]:
@@ -133,8 +138,10 @@ def main() -> None:
     setup_logging()
     config = load_config()
 
-    notices = merge_notices(collect(config))
+    collected, statuses = collect(config)
+    notices = merge_notices(collected)
     store = Store(ROOT / "data" / "notices.json")
+    health = Health(ROOT / "data" / "health.json")
     seed = args.seed or not store.records
     if seed and not args.seed:
         log.warning("저장된 공고가 없어 첫 실행으로 보고 seed 모드로 실행합니다 (알림 없음)")
@@ -143,8 +150,9 @@ def main() -> None:
     today = today_kst()
     process(notices, store, config, today, seed=seed and not args.dry_run)
 
+    alerts = health.update(statuses, today, config["health"]["warn_days"])
     failed = False
-    if not seed or args.dry_run:
+    if not seed or args.dry_run or alerts:
         try:
             notifier = PrintNotifier() if args.dry_run else KakaoNotifier.from_env(
                 on_new_refresh_token=lambda t: save_refresh_token(t, ROOT / ".env"))
@@ -156,12 +164,16 @@ def main() -> None:
             log.error("KAKAO_REST_API_KEY / KAKAO_REFRESH_TOKEN이 없어 알림을 보내지 못했습니다")
             failed = True
         elif notifier is not None:
-            send_notifications(store, notifier, today, config["notify"]["reminder_days_before"])
+            for text in alerts:  # 수집 경고·복구는 관리자(나)에게만
+                notifier.send(text, ACTIONS_URL)
+            if not seed or args.dry_run:
+                send_notifications(store, notifier, today, config["notify"]["reminder_days_before"])
 
     if args.dry_run:
         return
     store.archive_old(today)
     log.info("notices.json %s", "저장" if store.save() else "변경 없음")
+    health.save()
     if failed:
         sys.exit(1)
 

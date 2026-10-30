@@ -14,7 +14,10 @@ def test_config_loads():
 
 def test_notices_json_is_valid():
     data = json.loads((ROOT / "data" / "notices.json").read_text(encoding="utf-8"))
-    assert data["notices"] == []
+    assert isinstance(data["notices"], list)
+    for n in data["notices"]:
+        assert {"key", "source", "title", "url", "notified_at", "alert"} <= n.keys()
+        assert "raw" not in n
 
 
 def test_no_secrets_in_tracked_config():

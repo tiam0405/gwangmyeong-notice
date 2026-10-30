@@ -38,6 +38,7 @@ class MyHomeCollector(BaseCollector):
             if not items or len(rows) >= total:
                 break
             page += 1
+        self.raw_count = len(rows)
         return rows_to_notices(rows)
 
 

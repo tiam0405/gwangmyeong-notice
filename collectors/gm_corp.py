@@ -35,7 +35,9 @@ class GmCorpCollector(BaseCollector):
             "pagenum": "1", "Noticecategory": "", "Noticename": "", "Noticeuseyn": "", "Type": "",
         }).text
         notices = []
-        for row in parse_list(html):
+        rows = parse_list(html)
+        self.raw_count = len(rows)
+        for row in rows:
             if not is_recruitment(row["title"]):
                 continue
             detail = parse_detail(self.request("POST", VIEW_URL, data={"Noticeid": row["id"]}).text)

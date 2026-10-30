@@ -39,6 +39,8 @@ class BaseCollector:
         self.session = requests.Session()
         self.session.headers["User-Agent"] = crawl.get("user_agent", "gwangmyeong-notice")
         self._last_request = 0.0
+        # 사이트에서 읽어낸 원본 줄 수 (키워드·지역으로 거르기 전). 0이면 구조 변경 의심
+        self.raw_count = 0
 
     def fetch(self) -> list[Notice]:
         raise NotImplementedError

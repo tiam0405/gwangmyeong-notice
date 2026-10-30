@@ -34,6 +34,9 @@ filters:
 notify:
   reminder_days_before: 1   # 접수 마감 며칠 전 리마인더
 
+health:
+  warn_days: 3              # 수집기가 이 기간 연속 실패·0건이면 카톡으로 경고
+
 crawl:
   user_agent: "gwangmyeong-notice/0.1 (+personal rental notice alert)"
   min_interval_sec: 1.0
