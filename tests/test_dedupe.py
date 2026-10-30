@@ -42,6 +42,15 @@ def test_repost_of_already_stored_notice(tmp_path):
     assert store.pending_notifications() == []
 
 
+def test_map_url_saved_only_for_precise_address(tmp_path):
+    store = Store(tmp_path / "notices.json")
+    a = n("gm_corp", "1", "광명 A 행복주택 입주자 모집", address="경기도 광명시 하안로 60")
+    b = n("gm_corp", "2", "광명 B 행복주택 입주자 모집", address="경기도 광명시 광명2동 88-14번지 일원")
+    main.process([a, b], store, CONFIG, date(2026, 6, 27))
+    assert store.get("gm_corp:1")["map_url"].startswith("https://map.naver.com/p/search/")
+    assert store.get("gm_corp:2")["map_url"] is None
+
+
 def test_far_apart_dates_not_duplicate(tmp_path):
     store = Store(tmp_path / "notices.json")
     a = n("gm_corp", "1", "광명소하 행복주택 입주자 모집", posted=date(2026, 1, 1))
