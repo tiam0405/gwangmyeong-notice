@@ -10,8 +10,8 @@
     "warned": false
   },
   "gh": {
-    "last_ok": "2026-10-30",
-    "last_error": "ConnectTimeout: HTTPSConnectionPool(host='apply.gh.or.kr', port=443): Max retries exceeded with url: /sb/sr/sr7150/selectPbancRentHouseList.do?pageIndex=1 (Caused by ConnectTimeoutError(<HTTPSConnecti",
+    "last_ok": "2026-10-31",
+    "last_error": null,
     "warned": false
   },
   "gm_city": {
