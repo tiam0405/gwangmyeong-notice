@@ -1,27 +1,27 @@
 {
   "myhome": {
-    "last_ok": "2026-11-09",
+    "last_ok": "2026-11-10",
     "last_error": null,
     "warned": false
   },
   "lh": {
-    "last_ok": "2026-11-09",
+    "last_ok": "2026-11-10",
     "last_error": null,
     "warned": false
   },
   "gh": {
-    "last_ok": "2026-11-09",
+    "last_ok": "2026-11-10",
     "last_error": null,
     "warned": false
   },
   "gm_city": {
-    "last_ok": "2026-11-09",
+    "last_ok": "2026-11-10",
     "last_error": null,
     "warned": false
   },
   "gm_corp": {
     "last_ok": "2026-11-09",
-    "last_error": null,
+    "last_error": "읽은 항목 0건",
     "warned": false
   }
 }
