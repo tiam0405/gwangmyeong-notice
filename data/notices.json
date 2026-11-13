@@ -1,6 +1,49 @@
 {
-  "updated_at": "2026-10-30T14:56:45+09:00",
+  "updated_at": "2026-11-14T02:14:24+09:00",
   "notices": [
+    {
+      "key": "gh:sr7155-852",
+      "source": "gh",
+      "source_id": "sr7155-852",
+      "title": "'26년 경기도형 창업특화주택 입주자 추가 모집 공고(운영기관 : 나눔과미래)",
+      "url": "https://apply.gh.or.kr/sb/sr/sr7155/selectPbancDetailView.do?pbancNo=852&pbancKndCd=01&previewYn=0",
+      "posted_at": "2026-11-13",
+      "apply_start": null,
+      "apply_end": null,
+      "region": "경기도 (여러 지역)",
+      "address": null,
+      "housing_type": "매입임대",
+      "target": null,
+      "summary": "매입임대",
+      "apply_method": "GH 주택청약·임대센터(apply.gh.or.kr)에서 신청\n자격·임대료·일정 등 자세한 내용은 공고 원문(첨부 공고문)에서 확인하세요",
+      "institution": "GH",
+      "attachments": [
+        {
+          "name": "붙임. 경기도형 청년창업특화주택 입주자 추가 모집 공고문(2026.11.12. 공고).pdf",
+          "url": "https://apply.gh.or.kr/sb/sr/sr7155/selectPbancDetailView.do?pbancNo=852&pbancKndCd=01&previewYn=0",
+          "kind": "공고문"
+        },
+        {
+          "name": "붙임. 경기도형 청년창업특화주택 입주자 모집 공고문(2026.11.12. 공고).hwp",
+          "url": "https://apply.gh.or.kr/sb/sr/sr7155/selectPbancDetailView.do?pbancNo=852&pbancKndCd=01&previewYn=0",
+          "kind": "공고문"
+        },
+        {
+          "name": "붙임. 경기도형 청년창업특화주택 입주자 추가 모집 공고문(2026.11.12. 공고).pdf",
+          "url": "https://apply.gh.or.kr/sb/sr/sr7155/selectPbancDetailView.do?pbancNo=852&pbancKndCd=01&previewYn=0",
+          "kind": "공고문"
+        }
+      ],
+      "alert": false,
+      "tags": [
+        "광명 포함 여부 확인 필요"
+      ],
+      "map_url": null,
+      "alert_reason": "청년·신혼 등 대상",
+      "notified_at": null,
+      "reminded_at": null,
+      "first_seen_at": "2026-11-14T02:14:23+09:00"
+    },
     {
       "key": "lh:2015122300020927",
       "source": "lh",
