@@ -1,26 +1,26 @@
 {
   "myhome": {
-    "last_ok": "2026-11-27",
+    "last_ok": "2026-11-28",
     "last_error": null,
     "warned": false
   },
   "lh": {
-    "last_ok": "2026-11-27",
+    "last_ok": "2026-11-28",
     "last_error": null,
     "warned": false
   },
   "gh": {
-    "last_ok": "2026-11-27",
+    "last_ok": "2026-11-28",
     "last_error": null,
     "warned": false
   },
   "gm_city": {
-    "last_ok": "2026-11-27",
+    "last_ok": "2026-11-28",
     "last_error": null,
     "warned": false
   },
   "gm_corp": {
-    "last_ok": "2026-11-27",
+    "last_ok": "2026-11-28",
     "last_error": null,
     "warned": false
   }
